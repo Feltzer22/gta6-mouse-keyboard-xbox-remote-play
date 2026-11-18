@@ -71,9 +71,28 @@ The full key list for every mode is in [`gta6-mouse-app/README.md`](gta6-mouse-a
 ## Tips for lower latency
 - **In GTA 6:** camera and aim sensitivity at max, acceleration at min, deadzone at min.
 - **In Windows:** untick *Enhance pointer precision* (Mouse > Pointer Options).
+- **Mouse:** set the **report/polling rate to 1000 Hz** in your mouse software (e.g. Logitech G HUB >
+  Sensitivity (DPI) > Report rate). This is not the DPI; DPI only changes sensitivity.
 - **Network:** PC and console wired (or 5 GHz Wi-Fi), on the same network, with Open NAT.
 - **In the code** (`gta_mouse.py`): `JANELA_MS` (camera smoothing window), `CURVA` (curve), `TAXA_HZ` (update rate)
   and the key maps are at the top of the file.
+
+The program itself adds under 0.1 ms between mouse and virtual controller (measured); the remaining
+delay comes from Remote Play streaming (video encoding and network).
+
+## Troubleshooting
+| Problem | Fix |
+|---|---|
+| `ModuleNotFoundError: No module named 'vgamepad'` | Run `pip install -r requirements.txt` in a normal terminal (same Python that runs `INICIAR.bat`). |
+| "Could not create the virtual controller" | Install the ViGEmBus driver (see Install) and restart the PC. |
+| Xbox app: *"We found your console but can't connect to it"* | PC and console must be on the **same network** (same router, same IP range, e.g. both `192.168.1.x`). A mesh/second router creates a separate network. Also set the PC's network profile to **Private** (Settings > Network & internet > Ethernet). |
+| Remote Play shows a black screen | On PCs with two GPUs, set the Xbox app to the dedicated GPU (Settings > System > Display > Graphics) and turn HDR off. |
+| Camera feels slow | Raise sensitivity with **=**, max out camera sensitivity in GTA 6, lower deadzone in the game. |
+| Camera keeps drifting after stopping the mouse | Lower the deadzone with **9**. |
+| Camera feels choppy | Raise `JANELA_MS` (e.g. 24) at the top of `gta_mouse.py`; check the mouse is at 1000 Hz. |
+| Nothing happens when playing | The program only acts while the window whose title starts with **XBOX** is focused. Click the Xbox app window; check the black window says ACTIVE. |
+| Windows cursor disappeared | Open `INICIAR.bat` again (it restores the cursor on start) or run `python gta_mouse.py --mostrar-cursor`. |
+| Real controller interferes | Turn it off or unplug it while using the program. |
 
 ## Credits
 - Virtual controller: [ViGEmBus](https://github.com/nefarius/ViGEmBus) via [vgamepad](https://github.com/yannbouteiller/vgamepad)
