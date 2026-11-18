@@ -24,6 +24,7 @@ Se o cursor do Windows sumir e não voltar (programa fechado à força), rode:
 | Tecla | Ação no GTA 6 | Controle |
 |---|---|---|
 | WASD | andar | analógico esq. |
+| Caps Lock | liga/desliga andar devagar (analógico a 50%) | analógico esq. |
 | Mouse | câmera / mira | analógico dir. |
 | Botão esquerdo | atirar · luta: agarrar | RT |
 | Botão direito | mirar / interagir · luta: travar alvo | LT |
@@ -88,8 +89,10 @@ A rodinha e o botão lateral 5 não fazem nada no veículo e na aeronave, para v
 Opções de ponteiro > desmarque **Aprimorar precisão do ponteiro**. A mira fica igual
 independente da velocidade da mão.
 
-**No programa** (começo do `gta_mouse.py`): `SUAVIZACAO_MS` menor = resposta mais crua e rápida;
-`CURVA` menor = movimentos pequenos mais fortes. As mensagens seguem o idioma do Windows
+**No programa** (começo do `gta_mouse.py`): `JANELA_MS` maior = câmera mais lisa, menor = mais crua
+(padrão 16 ms); `SUAVIZACAO_MS` = filtro extra; `CURVA` menor = movimentos pequenos mais fortes.
+O próprio programa leva menos de 0,1 ms entre o mouse e o controle virtual; o atraso que sobra
+vem do streaming (vídeo e rede). As mensagens seguem o idioma do Windows
 (português ou inglês); use `IDIOMA = "pt"` para forçar português.
 
 **Rede:** console e PC no cabo do roteador (ou Wi-Fi 5 GHz), na mesma rede, nada baixando enquanto joga.

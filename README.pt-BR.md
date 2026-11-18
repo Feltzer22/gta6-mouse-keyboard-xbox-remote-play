@@ -52,7 +52,7 @@ A tabela completa de teclas de todos os modos está em [`gta6-mouse-app/LEIA-ME.
 ## Teclas principais (a pé)
 | Tecla | Ação | Controle |
 |---|---|---|
-| WASD | mover-se | L |
+| WASD | mover-se (Caps Lock = andar devagar) | L |
 | Mouse | olhar / mirar | R |
 | Botão esquerdo / direito | atirar / mirar | RT / LT |
 | Shift | correr | L3 |
@@ -72,7 +72,7 @@ A tabela completa de teclas de todos os modos está em [`gta6-mouse-app/LEIA-ME.
 - **No GTA 6:** sensibilidade da câmera e da mira no máximo, aceleração no mínimo, zona morta no mínimo.
 - **No Windows:** desmarque *Aprimorar precisão do ponteiro* (Mouse > Opções de ponteiro).
 - **Rede:** PC e console no cabo (ou Wi-Fi 5 GHz), na mesma rede, NAT aberto.
-- **No código** (`gta_mouse.py`): `SUAVIZACAO_MS`, `CURVA`, `TAXA_HZ` e os mapas de teclas ficam no topo.
+- **No código** (`gta_mouse.py`): `JANELA_MS` (suavidade da câmera), `CURVA`, `TAXA_HZ` e os mapas de teclas ficam no topo.
 
 ## Créditos
 - Controle virtual: [ViGEmBus](https://github.com/nefarius/ViGEmBus) via [vgamepad](https://github.com/yannbouteiller/vgamepad)

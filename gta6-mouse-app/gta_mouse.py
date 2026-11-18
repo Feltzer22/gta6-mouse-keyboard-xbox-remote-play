@@ -8,6 +8,7 @@ F8 = liga/desliga   V = a pé / veículo   N = aeronave
 - = = sensibilidade   9 0 = zona morta
 """
 import atexit
+from collections import deque
 import ctypes
 import ctypes.wintypes as wt
 import math
@@ -24,8 +25,11 @@ from pynput import keyboard, mouse
 SENS_PADRAO = 1.3       # sensibilidade do mouse (muda com - e =)
 DEADZONE_PADRAO = 0.22  # pula a zona morta do analógico do jogo (muda com 9 e 0)
 CURVA = 0.75            # < 1 deixa movimentos pequenos mais fortes
-SUAVIZACAO_MS = 6       # 0 = cru (mais tremido), 15 = bem suave (mais atraso)
+JANELA_MS = 16          # média do movimento do mouse: maior = câmera mais lisa, menor = mais crua
+SUAVIZACAO_MS = 2       # filtro extra depois da média (0 = desliga)
 TAXA_HZ = 500           # atualizações do controle por segundo
+ANDAR_DEVAGAR = 0.5     # força do analógico esquerdo no modo andar devagar (Caps Lock)
+PRIORIDADE_ALTA = True  # dá prioridade alta ao programa no Windows (menos engasgos)
 ESCONDER_CURSOR = True
 TITULOS_XBOX = ("xbox",)  # janela onde o programa age (título começa com isso)
 
@@ -126,6 +130,7 @@ TEXTOS = {
         "sem_driver": "Não consegui criar o controle virtual. O driver ViGEmBus está instalado?",
         "sair": "Enter para sair",
         "cursor": "Cursor do Windows restaurado.",
+        "devagar": "  · andando devagar (Caps)",
     },
     "en": {
         "modos": {"a_pe": "ON FOOT", "veiculo": "VEHICLE", "aeronave": "AIRCRAFT"},
@@ -136,6 +141,7 @@ TEXTOS = {
         "sem_driver": "Could not create the virtual controller. Is the ViGEmBus driver installed?",
         "sair": "Press Enter to quit",
         "cursor": "Windows cursor restored.",
+        "devagar": "  · walking (Caps)",
     },
 }
 T = TEXTOS[IDIOMA]
@@ -146,7 +152,7 @@ VK_NOMES = {0x20: "SPACE", 0xA0: "SHIFT", 0xA1: "SHIFT", 0x10: "SHIFT",
             0xA2: "CTRL", 0xA3: "CTRL", 0x11: "CTRL", 0xA4: "ALT", 0x12: "ALT",
             0x09: "TAB", 0x0D: "ENTER", 0x14: "CAPS", 0x1B: "ESC", 0x08: "BACKSPACE",
             0x25: "LEFT", 0x26: "UP", 0x27: "RIGHT", 0x28: "DOWN"}
-VK_F8, VK_V, VK_N = 0x77, 0x56, 0x4E
+VK_F8, VK_V, VK_N, VK_CAPS = 0x77, 0x56, 0x4E, 0x14
 VK_SENS_MENOS, VK_SENS_MAIS = 0xBD, 0xBB        # - =  (mesmo lugar no ABNT2 e no americano)
 VK_DZ_MENOS, VK_DZ_MAIS = 0x39, 0x30            # 9 0
 
@@ -173,6 +179,8 @@ user32.CreateCursor.argtypes = [wt.HINSTANCE, ctypes.c_int, ctypes.c_int, ctypes
                                 ctypes.c_void_p, ctypes.c_void_p]
 user32.SetSystemCursor.argtypes = [ctypes.c_void_p, wt.DWORD]
 user32.SystemParametersInfoW.argtypes = [wt.UINT, wt.UINT, ctypes.c_void_p, wt.UINT]
+kernel32.GetCurrentProcess.restype = wt.HANDLE
+kernel32.SetPriorityClass.argtypes = [wt.HANDLE, wt.DWORD]
 
 PASTA = os.path.dirname(os.path.abspath(__file__))
 CONFIG = os.path.join(PASTA, "ajustes.txt")
@@ -213,17 +221,29 @@ def vk_para_nome(vk):
     return None
 
 
+_cache_janela = {"hwnd": None, "e_xbox": False, "centro": None, "quando": 0.0}
+
+
 def janela_xbox_em_foco():
+    """Centro da janela do app Xbox se ela estiver em foco, senão None.
+    Só lê o título quando a janela em foco muda (ler a cada 2 ms causava engasgos)."""
     hwnd = user32.GetForegroundWindow()
     if not hwnd:
         return None
-    buf = ctypes.create_unicode_buffer(256)
-    user32.GetWindowTextW(hwnd, buf, 256)
-    if not buf.value.strip().lower().startswith(TITULOS_XBOX):
-        return None
-    r = wt.RECT()
-    user32.GetWindowRect(hwnd, ctypes.byref(r))
-    return ((r.left + r.right) // 2, (r.top + r.bottom) // 2)
+    c = _cache_janela
+    agora = time.perf_counter()
+    if hwnd != c["hwnd"] or agora - c["quando"] > 0.25:
+        # janela nova, ou passou 1/4 s (título/tamanho podem ter mudado)
+        buf = ctypes.create_unicode_buffer(256)
+        user32.GetWindowTextW(hwnd, buf, 256)
+        c["hwnd"] = hwnd
+        c["e_xbox"] = buf.value.strip().lower().startswith(TITULOS_XBOX)
+        c["quando"] = agora
+        if c["e_xbox"]:
+            r = wt.RECT()
+            user32.GetWindowRect(hwnd, ctypes.byref(r))
+            c["centro"] = ((r.left + r.right) // 2, (r.top + r.bottom) // 2)
+    return c["centro"] if c["e_xbox"] else None
 
 
 class Estado:
@@ -232,6 +252,8 @@ class Estado:
         self.ligado = True
         self.ativo = False
         self.modo = "a_pe"
+        self.andar = False          # Caps Lock: andar devagar
+        self.evento = threading.Event()  # acorda o laço principal na hora de um clique/tecla
         self.pressionadas = set()
         self.pulsos = {}
         self.acc_x = 0.0
@@ -266,7 +288,7 @@ def stick_da_velocidade(v, sens, deadzone):
     return math.copysign(min(1.0, deadzone + forca * (1 - deadzone)), v)
 
 
-def calcular_controle(pressionadas, pulsos_ativos, modo):
+def calcular_controle(pressionadas, pulsos_ativos, modo, andar=False):
     """Devolve (botões, lt, rt, lx, ly) a partir das entradas."""
     mapa = MAPAS[modo]
     alvos = {mapa[e] for e in pressionadas | pulsos_ativos if e in mapa}
@@ -278,6 +300,8 @@ def calcular_controle(pressionadas, pulsos_ativos, modo):
     n = math.hypot(lx, ly)
     if n > 1:
         lx, ly = lx / n, ly / n
+    if andar and modo == "a_pe":
+        lx, ly = lx * ANDAR_DEVAGAR, ly * ANDAR_DEVAGAR
     return botoes, lt, rt, float(lx), float(ly)
 
 
@@ -300,6 +324,14 @@ def filtro_teclado(msg, data):
             teclado_listener.suppress_event()
             return
         if not E.ativo:
+            return
+        if vk == VK_CAPS:
+            if desce and "CAPSLOCK" not in E.pressionadas:
+                E.andar = not E.andar
+                E.avisos.append("ajuste")
+                E.evento.set()
+            (E.pressionadas.add if desce else E.pressionadas.discard)("CAPSLOCK")
+            teclado_listener.suppress_event()
             return
         if vk in (VK_V, VK_N):
             chave = "V" if vk == VK_V else "N"
@@ -331,9 +363,12 @@ def filtro_teclado(msg, data):
         if not tecla_e_nossa(nome):
             return
         if desce:
-            E.pressionadas.add(nome)
+            if nome not in E.pressionadas:
+                E.pressionadas.add(nome)
+                E.evento.set()
         else:
             E.pressionadas.discard(nome)
+            E.evento.set()
     teclado_listener.suppress_event()
 
 
@@ -359,6 +394,8 @@ def filtro_mouse(msg, data):
             E.pulsos["RODA"] = time.perf_counter() + 0.09
         else:
             return
+        if msg != WM_MOUSEMOVE:
+            E.evento.set()  # clique: atualiza o controle na hora
     mouse_listener.suppress_event()
 
 
@@ -373,6 +410,8 @@ def mostrar_estado():
         texto = T["esperando"]
     else:
         texto = T["ativo"].format(modo=NOMES_MODO[E.modo], sens=E.sens, dz=E.deadzone)
+        if E.andar and E.modo == "a_pe":
+            texto += T["devagar"]
     print(f"\r{texto:<96}", end="", flush=True)
 
 
@@ -397,15 +436,21 @@ def main():
         input(T["sair"])
         return
     winmm.timeBeginPeriod(1)  # timer do Windows em 1 ms (menos atraso)
+    if PRIORIDADE_ALTA:
+        kernel32.SetPriorityClass(kernel32.GetCurrentProcess(), 0x00000080)  # HIGH_PRIORITY_CLASS
     teclado_listener.start()
     mouse_listener.start()
     rx = ry = 0.0
     periodo = 1.0 / TAXA_HZ
+    janela = JANELA_MS / 1000.0
+    historico = deque()  # (instante, dx, dy) dos últimos JANELA_MS
+    soma_x = soma_y = 0.0
     ultimo = time.perf_counter()
     ultimo_estado = None
     try:
         while True:
-            time.sleep(periodo)
+            E.evento.wait(periodo)  # acorda antes se houver clique/tecla
+            E.evento.clear()
             agora = time.perf_counter()
             dt_ms = max(0.5, (agora - ultimo) * 1000)
             ultimo = agora
@@ -420,12 +465,12 @@ def main():
                 if not E.ativo and era_ativo:
                     E.pressionadas = {p for p in E.pressionadas if p == "F8"}
                     E.pulsos.clear()
-                vx, vy = E.acc_x / dt_ms, E.acc_y / dt_ms
+                dx, dy = E.acc_x, E.acc_y
                 E.acc_x = E.acc_y = 0.0
                 pulsos = {k for k, t in E.pulsos.items() if t > agora}
                 E.pulsos = {k: t for k, t in E.pulsos.items() if t > agora}
                 press = set(E.pressionadas)
-                modo, sens, dz, ativo = E.modo, E.sens, E.deadzone, E.ativo
+                modo, sens, dz, ativo, andar = E.modo, E.sens, E.deadzone, E.ativo, E.andar
                 avisos, E.avisos = E.avisos, []
 
             if ativo and not era_ativo:
@@ -433,19 +478,33 @@ def main():
             elif era_ativo and not ativo:
                 mostrar_cursor()
 
+            # velocidade do mouse = movimento dos últimos JANELA_MS (estável, sem "buracos"
+            # quando o app Xbox lê o controle entre dois eventos do mouse)
+            if ativo and (dx or dy):
+                historico.append((agora, dx, dy))
+                soma_x += dx
+                soma_y += dy
+            while historico and (historico[0][0] < agora - janela or not ativo):
+                _, ox, oy = historico.popleft()
+                soma_x -= ox
+                soma_y -= oy
+            if not historico:
+                soma_x = soma_y = 0.0
+            vx, vy = soma_x / JANELA_MS, soma_y / JANELA_MS
+
             alvo_x = stick_da_velocidade(vx, sens, dz) if ativo else 0.0
             alvo_y = stick_da_velocidade(vy, sens, dz) if ativo else 0.0
             k = math.exp(-dt_ms / SUAVIZACAO_MS) if SUAVIZACAO_MS > 0 else 0.0
             rx = rx * k + alvo_x * (1 - k)
             ry = ry * k + alvo_y * (1 - k)
-            if abs(rx) < dz * 0.5 and alvo_x == 0:
+            if alvo_x == 0 and abs(rx) < 0.05:
                 rx = 0.0
-            if abs(ry) < dz * 0.5 and alvo_y == 0:
+            if alvo_y == 0 and abs(ry) < 0.05:
                 ry = 0.0
 
             pad.reset()
             if ativo:
-                botoes, lt, rt, lx, ly = calcular_controle(press, pulsos, modo)
+                botoes, lt, rt, lx, ly = calcular_controle(press, pulsos, modo, andar)
                 for b in botoes:
                     pad.press_button(button=b)
                 pad.left_trigger_float(value_float=lt)
@@ -457,7 +516,7 @@ def main():
 
             if avisos:
                 threading.Thread(target=_bipes, args=(avisos,), daemon=True).start()
-            estado = (E.ligado, ativo, modo, round(sens, 2), round(dz, 2))
+            estado = (E.ligado, ativo, modo, round(sens, 2), round(dz, 2), andar)
             if estado != ultimo_estado:
                 mostrar_estado()
                 ultimo_estado = estado

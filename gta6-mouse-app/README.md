@@ -24,6 +24,7 @@ If the Windows cursor disappears and doesn't come back (program killed), run
 | Key | GTA 6 action | Controller |
 |---|---|---|
 | WASD | move | left stick |
+| Caps Lock | toggle walk (stick at 50%) | left stick |
 | Mouse | camera / aim | right stick |
 | Left button | shoot · melee: grab | RT |
 | Right button | aim / interact · melee: lock on | LT |
@@ -87,8 +88,10 @@ The wheel and side button 5 do nothing in vehicle and aircraft modes, so you don
 **In Windows:** Settings > Bluetooth & devices > Mouse > Additional mouse settings >
 Pointer Options > untick **Enhance pointer precision**. Aim stays consistent regardless of hand speed.
 
-**In the program** (top of `gta_mouse.py`): lower `SUAVIZACAO_MS` = rawer, faster response;
-lower `CURVA` = stronger small movements. Messages follow the Windows language (Portuguese or English);
+**In the program** (top of `gta_mouse.py`): higher `JANELA_MS` = smoother camera, lower = rawer
+(default 16 ms); `SUAVIZACAO_MS` = extra filter; lower `CURVA` = stronger small movements.
+The program itself takes under 0.1 ms from mouse to virtual controller; the remaining delay
+comes from streaming (video and network). Messages follow the Windows language (Portuguese or English);
 set `IDIOMA = "en"` to force English.
 
 **Network:** console and PC wired to the router (or 5 GHz Wi-Fi), same network, nothing downloading while you play.

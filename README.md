@@ -52,7 +52,7 @@ The full key list for every mode is in [`gta6-mouse-app/README.md`](gta6-mouse-a
 ## Main keys (on foot)
 | Key | Action | Controller |
 |---|---|---|
-| WASD | move | L |
+| WASD | move (Caps Lock = walk) | L |
 | Mouse | look / aim | R |
 | Left / right button | shoot / aim | RT / LT |
 | Shift | sprint | L3 |
@@ -72,7 +72,7 @@ The full key list for every mode is in [`gta6-mouse-app/README.md`](gta6-mouse-a
 - **In GTA 6:** camera and aim sensitivity at max, acceleration at min, deadzone at min.
 - **In Windows:** untick *Enhance pointer precision* (Mouse > Pointer Options).
 - **Network:** PC and console wired (or 5 GHz Wi-Fi), on the same network, with Open NAT.
-- **In the code** (`gta_mouse.py`): `SUAVIZACAO_MS` (smoothing), `CURVA` (curve), `TAXA_HZ` (update rate)
+- **In the code** (`gta_mouse.py`): `JANELA_MS` (camera smoothing window), `CURVA` (curve), `TAXA_HZ` (update rate)
   and the key maps are at the top of the file.
 
 ## Credits
