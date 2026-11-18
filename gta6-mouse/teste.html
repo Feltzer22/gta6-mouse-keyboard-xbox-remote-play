@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>Teste GTA Mouse</title>
+<script src="inject.js"></script>
+<style>
+  body { font: 14px system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 50px 20px; }
+  pre { background: #222; padding: 12px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>Teste do GTA Mouse</h1>
+<p>Clique na página para travar o mouse, aperte teclas e mexa o mouse. Esc solta.</p>
+<pre id="out">sem controle</pre>
+<script>
+  const names = ['A','B','X','Y','LB','RB','LT','RT','View','Menu','LS','RS','Cima','Baixo','Esq','Dir','Guide'];
+  function loop() {
+    const gp = navigator.getGamepads()[0];
+    document.getElementById('out').textContent = gp
+      ? `id: ${gp.id}\naxes: ${gp.axes.map(a => a.toFixed(2)).join('  ')}\nbotões: ${gp.buttons.map((b, i) => b.pressed ? names[i] : null).filter(Boolean).join(' ') || '-'}`
+      : 'sem controle';
+    requestAnimationFrame(loop);
+  }
+  loop();
+</script>
+</body>
+</html>

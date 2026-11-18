@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+# ajustes pessoais salvos pelo programa
+gta6-mouse-app/ajustes.txt
+gta6-mouse-app/sensibilidade.txt
+.claude/
