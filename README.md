@@ -1,96 +1,101 @@
-# GTA 6 — todas as teclas para mouse e teclado (Xbox Remote Play)
+# GTA 6 — all keys for mouse & keyboard (Xbox Remote Play)
 
-Jogue **GTA 6 no seu Xbox** usando **mouse e teclado no PC**, pelo Remote Play.
-O jogo continua rodando no console; o PC transforma mouse e teclado em um controle de Xbox.
+🌐 **English** · [Português](README.pt-BR.md)
 
-Todas as ações do esquema padrão de controle do GTA 6 estão mapeadas: a pé, mira,
-corpo a corpo, natação, paraquedas, veículos, bicicletas e aeronaves.
+Play **GTA 6 on your Xbox** with **mouse and keyboard on your PC**, through Remote Play.
+The game keeps running on the console; the PC turns your mouse and keyboard into an Xbox controller.
 
-> ⚠️ **Aviso:** no online, usar mouse "disfarçado" de controle pode ser visto como trapaça
-> (como XIM/Cronus) e pode dar banimento. No modo história o risco é bem menor. Use por sua conta.
+Every action in GTA 6's default controller layout is mapped: on foot, aiming, melee,
+swimming, parachute, land/water vehicles, bicycles and aircraft.
 
-## Duas versões
+> ⚠️ **Warning:** in online modes, a mouse "disguised" as a controller may be considered cheating
+> (like XIM/Cronus) and could get you banned. The risk is much lower in story mode. Use at your own risk.
 
-| Pasta | Funciona em | Como funciona |
+## Two versions
+
+| Folder | Works with | How it works |
 |---|---|---|
-| [`gta6-mouse-app/`](gta6-mouse-app) | **App Xbox** no Windows | Programa em Python que cria um controle de Xbox 360 virtual (driver ViGEmBus) |
-| [`gta6-mouse/`](gta6-mouse) | Remote Play **no navegador** (xbox.com/remoteplay) | Extensão do Edge/Chrome que finge ser um controle na página |
+| [`gta6-mouse-app/`](gta6-mouse-app) | **Xbox app** on Windows | Python program that creates a virtual Xbox 360 controller (ViGEmBus driver) |
+| [`gta6-mouse/`](gta6-mouse) | Remote Play **in the browser** (xbox.com/remoteplay) | Edge/Chrome extension that pretends to be a controller on the page |
 
 ---
 
-## Versão para o app Xbox (recomendada)
+## Xbox app version (recommended)
 
-### Requisitos
-- Windows 10/11 64 bits
-- [Python 3](https://www.python.org/downloads/) (marque "Add Python to PATH" na instalação)
-- Driver **ViGEmBus** (o instalador vem junto com a biblioteca `vgamepad`)
-- Xbox com **Recursos remotos** ligados e na mesma rede do PC
+### Requirements
+- Windows 10/11 64-bit
+- [Python 3](https://www.python.org/downloads/) (tick "Add Python to PATH" during setup)
+- **ViGEmBus** driver (its installer ships with the `vgamepad` library)
+- Xbox with **Remote features** enabled, on the same network as the PC
 
-### Instalação
+### Install
 ```powershell
 pip install -r requirements.txt
 ```
-Se o driver ViGEmBus não for instalado automaticamente, rode o instalador que fica em
+If the ViGEmBus driver is not installed automatically, run the installer located at
 `...\site-packages\vgamepad\win\vigem\install\x64\ViGEmBusSetup_x64.msi`.
 
-### Uso
-1. Desligue o controle de verdade.
-2. Dê dois cliques em **`gta6-mouse-app/INICIAR.bat`** e deixe a janela aberta.
-3. No app Xbox, abra o Remote Play do seu console e o GTA 6.
-4. Clique na janela do app Xbox: toca um bipe, o cursor some e o mouse vira a câmera.
-5. **F8** liga/desliga (mouse normal de volta). Alt+Tab também solta.
+### Usage
+1. Turn off your real controller.
+2. Double-click **`gta6-mouse-app/INICIAR.bat`** and leave the window open.
+3. In the Xbox app, start Remote Play to your console and open GTA 6.
+4. Click the Xbox app window: you hear a beep, the cursor hides and the mouse becomes the camera.
+5. **F8** toggles on/off (gives you the normal mouse back). Alt+Tab also releases it.
 
-### Modos e ajustes
-| Tecla | Função |
+The program shows its messages in Portuguese on a Portuguese Windows and in English otherwise.
+
+### Modes and tuning
+| Key | Function |
 |---|---|
-| **V** | A PÉ ↔ VEÍCULO (carro, moto, barco, bicicleta) |
-| **N** | A PÉ ↔ AERONAVE |
-| **- / =** | diminui / aumenta a sensibilidade do mouse |
-| **9 / 0** | diminui / aumenta a zona morta |
-| **F8** | liga / desliga |
+| **V** | ON FOOT ↔ VEHICLE (car, motorcycle, boat, bicycle) |
+| **N** | ON FOOT ↔ AIRCRAFT |
+| **- / =** | lower / raise mouse sensitivity |
+| **9 / 0** | lower / raise deadzone |
+| **F8** | on / off |
 
-A tabela completa de teclas está em [`gta6-mouse-app/LEIA-ME.md`](gta6-mouse-app/LEIA-ME.md).
+The full key list is in [`gta6-mouse-app/README.md`](gta6-mouse-app/README.md).
 
-### Teclas principais (a pé)
-| Tecla | Ação | Controle |
+### Main keys (on foot)
+| Key | Action | Controller |
 |---|---|---|
-| WASD | mover-se | L |
-| Mouse | olhar / mirar | R |
-| Botão esquerdo / direito | atirar / mirar | RT / LT |
-| Shift | correr | L3 |
-| Espaço | pular / escalar | A |
-| C | agachar (segurar = descansar) | B |
-| F | corpo a corpo | X |
-| E | interagir / entrar no veículo | Y |
-| Q | proteger-se | RB |
-| Tab | sacar/guardar arma (segurar = inventário) | LB |
-| Z | olhar para trás | R3 |
-| T / O / X / K | celular / objetivo / rádio / detonar | direcional |
-| M | mapa | View |
-| Esc | pausar | Menu |
-| Enter / Backspace | confirmar / voltar nos menus | A / B |
+| WASD | move | L |
+| Mouse | look / aim | R |
+| Left / right button | shoot / aim | RT / LT |
+| Shift | sprint | L3 |
+| Space | jump / climb | A |
+| C | crouch (hold = rest) | B |
+| F | melee | X |
+| E | interact / enter vehicle | Y |
+| Q | take cover | RB |
+| Tab | draw/holster weapon (hold = inventory) | LB |
+| Z | look behind | R3 |
+| T / O / X / K | phone / objective / radio / detonate | D-pad |
+| M | map | View |
+| Esc | pause | Menu |
+| Enter / Backspace | confirm / back in menus | A / B |
 
-### Dicas para menos atraso
-- **No GTA 6:** sensibilidade da câmera e da mira no máximo, aceleração no mínimo, zona morta no mínimo.
-- **No Windows:** desmarque *Aprimorar precisão do ponteiro* (Mouse > Opções de ponteiro).
-- **Rede:** PC e console no cabo (ou Wi-Fi 5 GHz), na mesma rede, NAT aberto.
-- **No código** (`gta_mouse.py`): `SUAVIZACAO_MS`, `CURVA`, `TAXA_HZ` e os mapas de teclas ficam no topo.
-
----
-
-## Versão para o navegador
-
-1. Abra `edge://extensions`, ligue **Modo de desenvolvedor** e clique em **Carregar sem pacote**.
-2. Escolha a pasta [`gta6-mouse/`](gta6-mouse).
-3. Abra **https://www.xbox.com/remoteplay**, conecte no console e clique na tela do jogo.
-
-Detalhes em [`gta6-mouse/LEIA-ME.md`](gta6-mouse/LEIA-ME.md).
+### Tips for lower latency
+- **In GTA 6:** camera and aim sensitivity at max, acceleration at min, deadzone at min.
+- **In Windows:** untick *Enhance pointer precision* (Mouse > Pointer Options).
+- **Network:** PC and console wired (or 5 GHz Wi-Fi), on the same network, with Open NAT.
+- **In the code** (`gta_mouse.py`): `SUAVIZACAO_MS` (smoothing), `CURVA` (curve), `TAXA_HZ` (update rate)
+  and the key maps are at the top of the file.
 
 ---
 
-## Créditos
-- Controle virtual: [ViGEmBus](https://github.com/nefarius/ViGEmBus) via [vgamepad](https://github.com/yannbouteiller/vgamepad)
-- Teclado e mouse: [pynput](https://github.com/moses-palmer/pynput)
-- Ideia da versão de navegador inspirada no [Better xCloud](https://github.com/redphx/better-xcloud)
+## Browser version
 
-Projeto independente, sem ligação com Rockstar Games, Take-Two ou Microsoft.
+1. Open `edge://extensions`, turn on **Developer mode** and click **Load unpacked**.
+2. Pick the [`gta6-mouse/`](gta6-mouse) folder.
+3. Open **https://www.xbox.com/remoteplay**, connect to your console and click the game screen.
+
+Details in [`gta6-mouse/README.md`](gta6-mouse/README.md).
+
+---
+
+## Credits
+- Virtual controller: [ViGEmBus](https://github.com/nefarius/ViGEmBus) via [vgamepad](https://github.com/yannbouteiller/vgamepad)
+- Keyboard and mouse hooks: [pynput](https://github.com/moses-palmer/pynput)
+- Browser version idea inspired by [Better xCloud](https://github.com/redphx/better-xcloud)
+
+Independent project, not affiliated with Rockstar Games, Take-Two or Microsoft.

@@ -1,5 +1,7 @@
 # GTA 6 Mouse — mouse e teclado no Xbox Remote Play (navegador)
 
+🌐 [English](README.md) · **Português**
+
 Extensão simples para o Edge/Chrome. Ela faz a página do Remote Play (xbox.com)
 achar que tem um controle de Xbox conectado, e esse controle é o seu mouse e teclado.
 
@@ -17,29 +19,33 @@ achar que tem um controle de Xbox conectado, e esse controle é o seu mouse e te
 | WASD | andar | W acelera, S freia/ré, A/D vira |
 | Mouse | câmera / mira | câmera |
 | Botão esquerdo | atirar (RT) | atirar (RB) |
-| Botão direito | mirar (LT) | — (LT) |
+| Botão direito | mirar (LT) | LT |
 | Shift | correr (L3) | buzina/nitro (L3) |
 | Espaço | pular (A) | freio de mão (A) |
-| C / Ctrl | agachar (B) | faróis (B) |
-| F | corpo a corpo (X) | sair (Y) |
+| C / Ctrl | agachar (B) | farol (B) |
+| F | corpo a corpo (X) | corpo a corpo (X) |
 | E | interagir / entrar (Y) | sair (Y) |
-| Q | cobertura (RB) | — |
-| Tab | guardar / equipamento (LB) | LB |
+| Q | proteger-se (RB) | — |
+| Tab | sacar/guardar arma (LB) | LB |
 | Z / botão do meio | olhar para trás (R3) | olhar para trás |
-| Rodinha | trocar arma (Y) | — |
+| Rodinha | trocar arma (Y) | nada (para não sair do veículo) |
 | T / setas / 1-4 | direcional (celular, rádio...) | direcional |
 | M | mapa (View) | mapa |
-| Enter / P | pausa (Menu) | pausa |
+| P | pausa (Menu) | pausa |
+| Enter / Backspace | confirmar / voltar nos menus (A / B) | igual |
 
 - **V**: troca entre A PÉ e VEÍCULO (o aviso no topo mostra o modo).
 - **[ ]**: diminui/aumenta a sensibilidade do mouse (fica salva).
-- **Esc**: solta o mouse. **F8**: liga/desliga tudo.
+- **Esc**: solta o mouse (no navegador o Esc é reservado para isso). **F8**: liga/desliga tudo.
+
+A versão do app Xbox ([`gta6-mouse-app`](../gta6-mouse-app)) é mais completa: tem modo aeronave,
+Esc como pausa e ajuste de zona morta.
 
 ## Dicas
 - No GTA 6, aumente a sensibilidade da câmera e diminua a zona morta do analógico direito.
 - Para mudar teclas, edite `MAP_A_PE` e `MAP_VEICULO` no começo do `inject.js`
   e clique em **Recarregar** em `edge://extensions`.
-- Para testar sem o jogo: com o servidor de teste ligado, abra `teste.html`.
+- Para testar sem o jogo, sirva esta pasta num servidor local e abra `teste.html`.
 
 ## Aviso
 No online, usar mouse "disfarçado" de controle pode ser visto como trapaça (igual XIM/Cronus)

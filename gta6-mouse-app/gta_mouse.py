@@ -107,7 +107,39 @@ MAP_AERONAVE = {           # WASD: arfagem / rolagem no analógico esquerdo
     # rodinha livre aqui: Y = sair da aeronave
 }
 MAPAS = {"a_pe": MAP_A_PE, "veiculo": MAP_VEICULO, "aeronave": MAP_AERONAVE}
-NOMES_MODO = {"a_pe": "A PÉ", "veiculo": "VEÍCULO", "aeronave": "AERONAVE"}
+# Idioma das mensagens: português no Windows em português, inglês nos outros.
+# Para forçar: IDIOMA = "pt" ou IDIOMA = "en".
+IDIOMA = None
+if IDIOMA is None:
+    try:
+        IDIOMA = "pt" if (ctypes.windll.kernel32.GetUserDefaultUILanguage() & 0x3FF) == 0x16 else "en"
+    except Exception:
+        IDIOMA = "en"
+
+TEXTOS = {
+    "pt": {
+        "modos": {"a_pe": "A PÉ", "veiculo": "VEÍCULO", "aeronave": "AERONAVE"},
+        "titulo": "GTA 6 Mouse para o app Xbox  -  feche esta janela para sair\n",
+        "desligado": "DESLIGADO  (F8 liga)",
+        "esperando": "Esperando: clique na janela do app Xbox  (F8 desliga)",
+        "ativo": "ATIVO: {modo}  (V veículo, N aeronave)  sens {sens:.2f} (- =)  zona morta {dz:.2f} (9 0)",
+        "sem_driver": "Não consegui criar o controle virtual. O driver ViGEmBus está instalado?",
+        "sair": "Enter para sair",
+        "cursor": "Cursor do Windows restaurado.",
+    },
+    "en": {
+        "modos": {"a_pe": "ON FOOT", "veiculo": "VEHICLE", "aeronave": "AIRCRAFT"},
+        "titulo": "GTA 6 Mouse for the Xbox app  -  close this window to quit\n",
+        "desligado": "OFF  (F8 turns on)",
+        "esperando": "Waiting: click the Xbox app window  (F8 turns off)",
+        "ativo": "ACTIVE: {modo}  (V vehicle, N aircraft)  sens {sens:.2f} (- =)  deadzone {dz:.2f} (9 0)",
+        "sem_driver": "Could not create the virtual controller. Is the ViGEmBus driver installed?",
+        "sair": "Press Enter to quit",
+        "cursor": "Windows cursor restored.",
+    },
+}
+T = TEXTOS[IDIOMA]
+NOMES_MODO = T["modos"]
 # ============================================================
 
 VK_NOMES = {0x20: "SPACE", 0xA0: "SHIFT", 0xA1: "SHIFT", 0x10: "SHIFT",
@@ -336,12 +368,11 @@ mouse_listener = mouse.Listener(win32_event_filter=filtro_mouse)
 
 def mostrar_estado():
     if not E.ligado:
-        texto = "DESLIGADO  (F8 liga)"
+        texto = T["desligado"]
     elif not E.ativo:
-        texto = "Esperando: clique na janela do app Xbox  (F8 desliga)"
+        texto = T["esperando"]
     else:
-        texto = (f"ATIVO: {NOMES_MODO[E.modo]}  (V veículo, N aeronave)  "
-                 f"sens {E.sens:.2f} (- =)  zona morta {E.deadzone:.2f} (9 0)")
+        texto = T["ativo"].format(modo=NOMES_MODO[E.modo], sens=E.sens, dz=E.deadzone)
     print(f"\r{texto:<96}", end="", flush=True)
 
 
@@ -354,16 +385,16 @@ _handler = ctypes.WINFUNCTYPE(wt.BOOL, wt.DWORD)(_ao_fechar_console)
 
 
 def main():
-    print("GTA 6 Mouse para o app Xbox  -  feche esta janela para sair\n")
+    print(T["titulo"])
     mostrar_cursor(forcar=True)  # garante cursor normal se uma execução anterior caiu
     atexit.register(mostrar_cursor, True)
     kernel32.SetConsoleCtrlHandler(_handler, True)
     try:
         pad = vg.VX360Gamepad()
     except Exception as e:  # driver ausente
-        print("Não consegui criar o controle virtual. O driver ViGEmBus está instalado?")
+        print(T["sem_driver"])
         print(e)
-        input("Enter para sair")
+        input(T["sair"])
         return
     winmm.timeBeginPeriod(1)  # timer do Windows em 1 ms (menos atraso)
     teclado_listener.start()
@@ -457,6 +488,6 @@ if __name__ == "__main__":
         p.update()
     elif "--mostrar-cursor" in sys.argv:
         mostrar_cursor(forcar=True)
-        print("Cursor do Windows restaurado.")
+        print(T["cursor"])
     else:
         main()

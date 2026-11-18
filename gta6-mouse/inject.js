@@ -27,8 +27,9 @@
     ShiftLeft: LS,     // correr
     KeyZ: RS,          // olhar para trás / zoom
     KeyM: VIEW,        // mapa
-    Enter: MENU,       // pausa
-    KeyP: MENU,
+    KeyP: MENU,        // pausa (Esc fica para soltar o mouse no navegador)
+    Enter: A,          // confirmar nos menus
+    Backspace: B,      // voltar nos menus
     KeyT: UP,          // celular
     ArrowUp: UP, ArrowDown: DOWN, ArrowLeft: LEFT, ArrowRight: RIGHT,
     Digit1: UP, Digit2: DOWN, Digit3: LEFT, Digit4: RIGHT,
@@ -42,15 +43,16 @@
     KeyS: LT,          // frear / ré
     Space: A,          // freio de mão
     KeyE: Y,           // sair do veículo
-    KeyF: Y,
-    KeyC: B,           // faróis (segurar = abaixar a cabeça)
+    KeyF: X,           // corpo a corpo
+    KeyC: B,           // farol (segurar = abaixar-se)
     ShiftLeft: LS,     // buzina / nitro
     KeyH: LS,
     Tab: LB,
     KeyZ: RS,          // olhar para trás
     KeyM: VIEW,
-    Enter: MENU,
     KeyP: MENU,
+    Enter: A,
+    Backspace: B,
     KeyT: UP,
     ArrowUp: UP, ArrowDown: DOWN, ArrowLeft: LEFT, ArrowRight: RIGHT,
     Digit1: UP, Digit2: DOWN, Digit3: LEFT, Digit4: RIGHT,
@@ -221,6 +223,7 @@
   window.addEventListener('wheel', (e) => {
     if (!active()) return;
     e.preventDefault(); e.stopImmediatePropagation();
+    if (vehicle) return; // no veículo a rodinha não faz nada (Y = sair do veículo)
     pulses.set(RODA_DO_MOUSE, performance.now() + 90);
   }, { capture: true, passive: false });
 

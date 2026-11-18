@@ -1,5 +1,7 @@
 # GTA 6 Mouse — mouse e teclado no app Xbox (Remote Play)
 
+🌐 [English](README.md) · **Português**
+
 Cria um controle de Xbox virtual no Windows (driver ViGEmBus) e transforma mouse e
 teclado nesse controle. Só age com a janela do **app Xbox** em primeiro plano.
 
@@ -87,9 +89,10 @@ Opções de ponteiro > desmarque **Aprimorar precisão do ponteiro**. A mira fic
 independente da velocidade da mão.
 
 **No programa** (começo do `gta_mouse.py`): `SUAVIZACAO_MS` menor = resposta mais crua e rápida;
-`CURVA` menor = movimentos pequenos mais fortes.
+`CURVA` menor = movimentos pequenos mais fortes. As mensagens seguem o idioma do Windows
+(português ou inglês); use `IDIOMA = "pt"` para forçar português.
 
-**Rede:** console no cabo do Deco (ou 5 GHz), PC no cabo, nada baixando enquanto joga.
+**Rede:** console e PC no cabo do roteador (ou Wi-Fi 5 GHz), na mesma rede, nada baixando enquanto joga.
 
 ## Aviso
 No online, mouse "disfarçado" de controle pode ser visto como trapaça (igual XIM/Cronus)
